@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI Cooking Coach — A real-time AI cook mentor that watches you cook via webcam and provides hands-free step-by-step verbal recipes.">
+  <title>AI Cooking Mentor — Live Webcam Guidance & Hands-Free Audio</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Style -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Emoji Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍳</text></svg>">
+</head>
+<body>
+
+  <!-- Glassmorphic Top Navbar -->
+  <nav class="top-navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <i data-lucide="chef-hat" class="nav-logo-icon" aria-hidden="true"></i>
+        <span>AI Cook Mentor</span>
+      </div>
+      <div class="nav-status-indicators">
+        <span id="status-cam" class="nav-status-badge status-inactive">
+          <span class="status-dot"></span>
+          <i data-lucide="video" class="nav-icon-sm"></i> Camera Off
+        </span>
+        <span id="status-mic" class="nav-status-badge status-inactive">
+          <span class="status-dot"></span>
+          <i data-lucide="mic" class="nav-icon-sm"></i> Hands-Free Off
+        </span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Background Wrapper -->
+  <div class="bg-wrapper" aria-hidden="true">
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <h1 class="main-title">Cook with your AI Mentor</h1>
+      <p class="subtitle">State what you are preparing, position your webcam, and cook hands-free as your chef gives you real-time verbal step guidance.</p>
+    </header>
+
+    <main class="main-content">
+      <!-- 1. INPUT STATE -->
+      <section class="panel panel-input" id="zone-input" aria-label="Webcam Mentor Inputs">
+        <form id="recipe-form" novalidate>
+          
+          <!-- Dish Description Input -->
+          <div class="form-group">
+            <label for="dish-input" class="form-label">What are you cooking today? <span class="required" aria-hidden="true">*</span></label>
+            <input type="text" id="dish-input" class="dish-text-input" placeholder="e.g., Fluffy Pancakes, Garlic Butter Shrimp, Carbonara..." required aria-required="true">
+            <span class="input-desc-helper">Tell your mentor the dish, and they will guide you step-by-step.</span>
+          </div>
+
+          <!-- Coach Selector Grid -->
+          <div class="form-group">
+            <span class="form-label">Choose your AI Chef Mentor Voice</span>
+            
+            <div class="voice-grid" role="radiogroup" aria-label="AI Chef Voice selector">
+              <!-- Cozy Grandma -->
+              <div class="voice-card active" data-voice="grandma" role="radio" aria-checked="true" tabindex="0" id="voice-grandma">
+                <div class="voice-avatar" aria-hidden="true">
+                  <i data-lucide="heart" class="avatar-svg-icon text-red"></i>
+                </div>
+                <div class="voice-info">
+                  <h3 class="voice-name">Cozy Grandma</h3>
+                  <p class="voice-desc">Sweet, warm encouragement and comforting advice</p>
+                </div>
+              </div>
+
+              <!-- Michelin Chef -->
+              <div class="voice-card" data-voice="michelin" role="radio" aria-checked="false" tabindex="-1" id="voice-michelin">
+                <div class="voice-avatar" aria-hidden="true">
+                  <i data-lucide="award" class="avatar-svg-icon text-gold"></i>
+                </div>
+                <div class="voice-info">
+                  <h3 class="voice-name">Michelin Chef</h3>
+                  <p class="voice-desc">Precision, advanced techniques, heat balance, and presentation</p>
+                </div>
+              </div>
+
+              <!-- Scrappy Saver -->
+              <div class="voice-card" data-voice="budget" role="radio" aria-checked="false" tabindex="-1" id="voice-budget">
+                <div class="voice-avatar" aria-hidden="true">
+                  <i data-lucide="wallet" class="avatar-svg-icon text-green"></i>
+                </div>
+                <div class="voice-info">
+                  <h3 class="voice-name">Scrappy Saver</h3>
+                  <p class="voice-desc">Zero-waste resource management and frugal substitutions</p>
+                </div>
+              </div>
+
+              <!-- Wasteland Survivor -->
+              <div class="voice-card" data-voice="survivalist" role="radio" aria-checked="false" tabindex="-1" id="voice-survivalist">
+                <div class="voice-avatar" aria-hidden="true">
+                  <i data-lucide="shield-alert" class="avatar-svg-icon text-orange"></i>
+                </div>
+                <div class="voice-info">
+                  <h3 class="voice-name">Wasteland Survivor</h3>
+                  <p class="voice-desc">Post-apocalyptic cooking jokes and caloric shelter rations</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit" id="btn-conjure">
+            <span>Start Live Cooking Session</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- 2. LOADING STATE -->
+      <section class="panel panel-loading hidden" id="zone-loading" aria-live="assertive" aria-label="Mentor Thinking">
+        <div class="loading-wrapper">
+          <div class="loading-spinner-container">
+            <div class="loading-spinner"></div>
+          </div>
+
+          <h2 class="loading-title" id="loading-title">Mentor is observing...</h2>
+          <p class="loading-desc" id="loading-desc">Inspecting your kitchen workspace state.</p>
+          
+          <div class="progress-bar-container" aria-hidden="true">
+            <div class="progress-bar-fill" id="progress-bar-fill"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. ERROR STATE -->
+      <section class="panel panel-error hidden" id="zone-error" aria-live="assertive" aria-label="Error Alert">
+        <div class="error-wrapper">
+          <div class="error-icon" aria-hidden="true">
+            <i data-lucide="alert-triangle"></i>
+          </div>
+          <h2 class="error-title">Analysis Failed</h2>
+          <p class="error-desc" id="error-message">The chef mentor encountered an issue. Let's try again.</p>
+          <button id="btn-error-reset" class="btn-secondary">Try Again</button>
+        </div>
+      </section>
+
+      <!-- 4. COACH OUTPUT STATE -->
+      <section class="recipe-output-view hidden" id="zone-recipe" aria-label="Live Cooking View">
+        <!-- Left Column: Live Webcam Viewport & Control Panel -->
+        <div class="output-column output-visuals">
+          <div class="card camera-viewport-card">
+            <div class="camera-viewport" id="camera-viewport">
+              <video id="live-webcam" autoplay playsinline class="camera-video-feed"></video>
+              <div class="camera-scan-line" id="camera-scan-line"></div>
+              <div class="camera-overlay-info">
+                <span class="rec-dot"></span> LIVE FEED
+              </div>
+            </div>
+            
+            <!-- Hidden canvas for capturing frame blobs -->
+            <canvas id="canvas-capture" class="hidden"></canvas>
+          </div>
+
+          <!-- Video Capture Controls -->
+          <div class="card camera-controls-card">
+            <button type="button" id="btn-capture-step" class="btn-capture-step" aria-label="Get Next Step">
+              <i data-lucide="aperture" class="btn-icon"></i>
+              <span>Get Next Step</span>
+            </button>
+            
+            <div class="secondary-controls">
+              <!-- Hands-Free Toggle Button -->
+              <button type="button" id="btn-hands-free" class="btn-secondary-control" aria-label="Toggle Hands-Free Voice Commands">
+                <i data-lucide="mic-off" id="btn-hands-free-icon"></i>
+                <span id="btn-hands-free-text">Hands-Free Off</span>
+              </button>
+              
+              <!-- Video Toggle Button -->
+              <button type="button" id="btn-toggle-camera" class="btn-secondary-control" aria-label="Toggle Camera on/off">
+                <i data-lucide="video" id="btn-toggle-camera-icon"></i>
+                <span id="btn-toggle-camera-text">Disable Camera</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Session Metadata Card -->
+          <div class="card stats-card">
+            <div class="stat-item">
+              <i data-lucide="list-ordered" class="stat-icon-svg text-gold" aria-hidden="true"></i>
+              <div class="stat-info">
+                <span class="stat-label">Active Step</span>
+                <span class="stat-value" id="current-step-display">Step 1</span>
+              </div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <i data-lucide="user" class="stat-icon-svg text-amber" aria-hidden="true"></i>
+              <div class="stat-info">
+                <span class="stat-label">Chef Mentor</span>
+                <span class="stat-value" id="coach-name">Cozy Grandma</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Instructions & Timeline Feedback -->
+        <div class="output-column output-details">
+          <div class="card header-card">
+            <h2 class="recipe-title" id="dish-title-display">Cooking: Fluffy Pancakes</h2>
+            
+            <!-- Chef Commentary Speech Bubble -->
+            <div class="chef-commentary-bubble">
+              <div class="chef-avatar" id="chef-bubble-avatar">
+                <!-- JS will render Lucide icon here -->
+              </div>
+              <div class="speech-bubble-body">
+                <p id="recipe-commentary">"Welcome, sweetie! Let's get started. Prepare your pan and show me when you are ready..."</p>
+                
+                <!-- Chef Voice Narrator Widget -->
+                <div class="chef-voice-control-panel">
+                  <button id="btn-speak-commentary" class="btn-voice-speak" aria-label="Listen to Chef">
+                    <i data-lucide="volume-2" class="voice-btn-icon" id="speak-icon"></i>
+                    <span id="speak-text">Listen to Coach</span>
+                  </button>
+                  
+                  <div class="soundwave-container" id="soundwave-container" aria-hidden="true">
+                    <span class="soundwave-bar bar-1"></span>
+                    <span class="soundwave-bar bar-2"></span>
+                    <span class="soundwave-bar bar-3"></span>
+                    <span class="soundwave-bar bar-4"></span>
+                    <span class="soundwave-bar bar-5"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step Progression Timeline -->
+          <div class="card timeline-card">
+            <h3 class="card-section-title">Cooking Steps Log</h3>
+            <div class="timeline-container" id="timeline-container">
+              <!-- JS Rendered list of completed steps -->
+              <p class="no-critiques-message" id="timeline-placeholder">Show the camera your kitchen setup and say "Next" or click "Get Next Step" to begin.</p>
+            </div>
+          </div>
+
+          <!-- Suggestions list Card -->
+          <div class="card steps-card hidden" id="suggestions-card">
+            <h3 class="card-section-title">Chef Tips for Next Time</h3>
+            <ul class="suggestions-list" id="suggestions-list">
+              <!-- JS Rendered suggestions -->
+            </ul>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="output-actions">
+            <button id="btn-reset" class="btn-primary">
+              <span>Finish Cooking Session</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Client-side Logic Script -->
+  <script src="app.js"></script>
+</body>
+</html>
