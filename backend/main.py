@@ -1,4 +1,4 @@
-"""Let's Cook FastAPI application server."""
+"""let's cook, literally FastAPI application server."""
 
 import json
 import os
@@ -15,7 +15,7 @@ from prompts import SYSTEM_PROMPT, VOICE_PROMPTS, VALID_VOICES, DEFAULT_VOICE
 # Load environment variables from .env
 load_dotenv()
 
-app = FastAPI(title="Let's Cook")
+app = FastAPI(title="let's cook, literally")
 
 # CORS middleware for local frontend development
 app.add_middleware(
