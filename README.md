@@ -1,8 +1,11 @@
 # let's cook, literally 🍳
 
+![let's cook, literally Screenshot](screenshot.png)
+
 A live **AI Cook Mentor** that watches you cook in real time via your webcam, guides you through a recipe step-by-step verbally, and analyzes your kitchen workspace frame-by-frame.
 
 Live URL: [https://lets-cook-literally-587945003408.us-central1.run.app](https://lets-cook-literally-587945003408.us-central1.run.app)
+
 
 ---
 
