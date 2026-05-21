@@ -1,6 +1,6 @@
-"""Prompts and configuration for the AI Cooking Coach live webcam assistant."""
+"""Prompts and configuration for the Let's Cook live webcam assistant."""
 
-SYSTEM_PROMPT = """You are a master culinary AI coach guiding the user in real time as their AI Cook Mentor. 
+SYSTEM_PROMPT = """You are a master culinary AI coach guiding the user in real time as their "Let's Cook" Mentor. 
 The user is cooking a specific dish, and they are presenting their kitchen workspace (stove, pan, ingredients, cutting board) via a webcam feed.
 
 You will receive:
