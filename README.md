@@ -1,92 +1,90 @@
-# 🍳 Fridge Chef
+# let's cook, literally 🍳
 
-Recast your random leftovers into a single creative recipe with a custom AI culinary voice and a photo.
+A live **AI Cook Mentor** that watches you cook in real time via your webcam, guides you through a recipe step-by-step verbally, and analyzes your kitchen workspace frame-by-frame.
+
+Live URL: [https://lets-cook-literally-587945003408.us-central1.run.app](https://lets-cook-literally-587945003408.us-central1.run.app)
+
+---
 
 ## What it does (in plain English)
 
-Fridge Chef is a single-page web application that helps you rescue ingredients that are lingering in your fridge. Instead of having to purchase a specific list of ingredients for a pre-made recipe, you type in whatever ingredients you currently have (e.g., "half an onion, 2 tortillas, leftover chicken breasts"), select one of the four unique AI Chef personalities, and click **Conjure Recipe**. 
+**let's cook, literally** is a hands-free, voice-activated cooking coach. Instead of reading off static screens with messy fingers, you position your webcam, state what you are preparing, and start cooking. The app uses the **Web Speech API** to listen for commands and captures live frames from your webcam. 
 
-The app generates:
-1. A creative, structured recipe matching your ingredients.
-2. Distinctly categorized lists separating **Rescued Fridge Ingredients** from assumed **Pantry Staples**.
-3. An interactive step-by-step cooking checklist where steps can be struck off as you cook.
-4. Custom commentary/feedback written in your selected AI Chef's voice.
-5. A beautiful, realistic AI-generated photo of the final plated dish (with graceful fallback if image generation fails).
+The system analyzes your kitchen workspace dynamically to deliver:
+1. **Real-time Observations**: Objective descriptions of what the coach observes in the pan/workspace.
+2. **Actionable Critiques**: Technical advice or safety warnings delivered in your chosen coach's voice.
+3. **Step-by-Step Audio Guidance**: Verbal recipe instructions read aloud via Text-to-Speech (TTS).
+4. **Interactive Timeline Log**: A scrollable history of completed steps and critiques, which can be clicked to replay the audio guidance.
 
-### The Culinary Voices 🧑‍🍳
-* **👵 Cozy Grandma**: Warm, doting comfort food instructions.
-* **👨‍🍳 Michelin Chef**: Fine-dining concepts, reductions, plating, and refined techniques.
-* **💰 Scrappy Saver**: Budget-conscious substitutions and zero-waste efficiency.
-* **☣️ Wasteland Survivor**: Post-apocalyptic bunker ration styling.
+### The Culinary Mentors 🧑‍🍳
+* **👵 Cozy Grandma**: Warm, doting, comforting culinary support.
+* **👨‍🍳 Michelin Chef**: Fine-dining techniques, reductions, elegant plating advice.
+* **💰 Scrappy Saver**: Zero-waste efficiency, cents saved, and clever leftovers rescue.
+* **☣️ Wasteland Survivor**: High-energy, post-apocalyptic shelter survival instructions.
+
+---
+
+## 💡 The Reflection
+### What surprised us?
+> "I assumed I'd have to coach Gemini into being empathetic. Turns out it already was — and the instruction I deleted was the one telling it to be kind."
 
 ---
 
 ## Technical Stack & Architecture
 
-- **Backend**: FastAPI (Python) serving static frontend files and API endpoints, powered by the new `google-genai` SDK.
-- **AI Engine**: Gemini 2.5 Flash (`gemini-2.5-flash`) for recipe JSON generation, and Imagen 3 (`imagen-3.0-generate-002`) for square recipe photos.
-- **Frontend**: Single Page Application built with Vanilla HTML, custom CSS (glassmorphism look & feel), and Vanilla JS.
-- **Package Manager**: Managed inside a virtual environment using `uv`.
+- **Backend**: FastAPI (Python) serving the static frontend and running `/api/coach` image analysis.
+- **AI Engine**: Gemini 2.5 Flash (`gemini-2.5-flash`) via the new `google-genai` SDK. Raw JPEG bytes are sent directly to the model using `types.Part.from_bytes` for sub-second structured JSON responses.
+- **Frontend**: Glassmorphic Single Page App built with Vanilla HTML/JS and custom CSS (with glowing webcam viewports and scanning laser overlays).
+- **Voice Commands**: Browser-native `webkitSpeechRecognition` for hands-free mode ("next", "chef", "check", "step").
+- **Voice Synthesis**: Browser-native `window.speechSynthesis` tuned for each mentor's personality.
 
 ---
 
-## Installation
+## How to Run Locally
 
-To run this project on a new machine:
+### 1. Sync Dependencies
+Inside the `backend/` folder, sync virtual environment dependencies using `uv`:
+```bash
+cd backend
+uv sync
+```
 
-1. **Install uv** (if you don't have it already):
-   ```bash
-   # On macOS/Linux
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
-2. **Clone the repository** and navigate to the project directory:
-   ```bash
-   git clone <repo-url>
-   cd codingjam-fridge-chef
-   ```
-3. **Sync dependencies**:
-   Navigate into the `backend/` folder and run `uv sync` to set up the virtualenv and install FastAPI, google-genai, pillow, pytest, and others:
-   ```bash
-   cd backend
-   uv sync
-   ```
+### 2. Configuration
+Create a `.env` file inside the `backend/` directory:
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+```
 
----
-
-## Configuration
-
-1. Create a `.env` file in the `backend/` directory:
-   ```bash
-   touch backend/.env
-   ```
-2. Add your Gemini API key:
-   ```env
-   GEMINI_API_KEY=your_actual_api_key_here
-   ```
-   *(Note: The `.env` file is already listed in `.gitignore` to prevent committing secrets).*
-
----
-
-## How to Run
-
-### 1. Run the Development Server
-From the `backend/` directory:
+### 3. Run the App
+Start the local FastAPI development server:
 ```bash
 uv run uvicorn main:app --reload
 ```
-Open your browser and navigate to **`http://localhost:8000`** to interact with the application.
+Open **`http://localhost:8000`** in your browser.
 
-### 2. Run Tests
-From the `backend/` directory:
+### 4. Run Tests
+Ensure the mocked test suite compiles and runs:
 ```bash
 uv run pytest -v
 ```
-This executes both the unit tests (voice normalization, input sanitation, markdown fence parsing) and the fully mocked integration tests.
 
 ---
 
-## Design Documents (Source of Truth)
-The project is built entirely in alignment with the following specification files:
-- [Product Specifications](file:///Users/thabhelo/code/codingjam-fridge-chef/product.md): Describes user personas, I/O structure, and voice details.
-- [UI/UX Specifications](file:///Users/thabhelo/code/codingjam-fridge-chef/ui.md): Specifies screens, design tokens, gradients, layout details, and custom animations.
-- [Engineering Design Spec](file:///Users/thabhelo/code/codingjam-fridge-chef/engineering.md): Outlines the architecture, Pydantic schemas, fallback models, and the testing strategy.
+## Live Deployment to Google Cloud Run
+
+The application is deployed live using the **Google Cloud CLI (`gcloud`)** directly to Google Cloud Run:
+```bash
+gcloud run deploy lets-cook-literally \
+  --source . \
+  --project gen-lang-client-0154753147 \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --set-env-vars GEMINI_API_KEY=your_gemini_api_key
+```
+
+---
+
+## Design Documents
+- [Product Specifications](file:///Users/thabhelo/code/codingjam-fridge-chef/product.md)
+- [UI/UX Specifications](file:///Users/thabhelo/code/codingjam-fridge-chef/ui.md)
+- [Engineering Design Spec](file:///Users/thabhelo/code/codingjam-fridge-chef/engineering.md)
